@@ -77,8 +77,8 @@ diopiEq
 diopiEqInp
 diopiEqInpScalar
 diopiEqScalar
-diopiErf
-diopiErfInp
+diopiErfinv
+diopiErfinvInp
 diopiExp
 diopiExpInp
 diopiFill
@@ -142,6 +142,7 @@ diopiMaskedFillInpScalar
 diopiMaskedFillScalar
 diopiMaskedSelect
 diopiMatmul
+diopiMatmulacc
 diopiMax
 diopiMaxAll
 diopiMaximum
