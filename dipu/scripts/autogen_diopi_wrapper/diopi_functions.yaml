@@ -407,6 +407,10 @@
   custom_code_at_the_beginning: |
   interface: diopiAddmm(&context, out, self, mat1, mat2, beta, alpha)
 
+- schema: "addmv.out(Tensor self, Tensor mat1, Tensor mat2, *, Scalar beta=1, Scalar alpha=1, Tensor(a!) out) -> Tensor(a!)"
+  custom_code_at_the_beginning: |
+  interface: diopiAddmv(&context, out, self, mat1, mat2, beta, alpha)
+
 - schema: "cross_entropy_loss_backward(Tensor grad_output, Tensor self, Tensor target, Tensor? weight=None, int reduction=Mean, SymInt ignore_index=-100, float label_smoothing=0.0) -> Tensor"
   register_op: False
   custom_code_at_the_beginning: |
@@ -1318,48 +1322,6 @@
 - schema: "matmul.out(Tensor self, Tensor other, *, Tensor(a!) out) -> Tensor(a!)"
   register_op: False
   interface: diopiMatmul(ctx, out, self, other)
-
-- schema: "matmulacc(Tensor tensorA, Tensor tensorB, Tensor tensorC) -> Tensor"
-  register_op: False
-  custom_code_at_the_beginning: |
-    const auto shapeA = tensorA.sizes();
-    const auto shapeB = tensorB.sizes();
-    const int64_t nA= shapeA.size();
-    const int64_t nB = shapeB.size();
-    std::vector<int64_t> output_shape;
-    if (nA == nB && nB == 2) {
-        output_shape = {shapeA[0], shapeB[1]};
-    } else if (nA == 1 && nB == 2) {
-      output_shape = {shapeB[1]};
-    } else if (nA == 2 && nB == 1) {
-      output_shape = {shapeA[0]}; 
-    } else if (nA > 2 && nB == 1) {
-      output_shape = std::vector<int64_t>(shapeA.begin(), shapeA.end() - 1);
-    } else if (nA == 1 && nB > 2) {
-      output_shape = std::vector<int64_t>(shapeB.begin(), shapeB.end());
-      output_shape.erase(output_shape.end() - 2);
-    } else if (nA >= 2 && nB >= 2) {
-      const int64_t nC = std::max(nA, nB);
-      output_shape = std::vector<int64_t>(nC, 1);
-      output_shape[output_shape.size() - 1] = shapeB[nB - 1];
-      output_shape[output_shape.size() - 2] = shapeA[nA - 2];
-      for (int i = 3; i <= nC; ++i) {
-        int dim = nC - i;
-        if (nA - i >= 0) {
-          output_shape[dim] = std::max(output_shape[dim], shapeA[nA - i]);
-        }
-        if (nB - i >= 0) {
-          output_shape[dim] = std::max(output_shape[dim], shapeB[nB - i]);
-        }
-      }
-    }
-
-    auto out = at::empty(output_shape, tensorC.options());
-  interface: diopiMatmulacc(ctx, out, tensorA, tensorB, tensorC)
-
-- schema: "matmulacc.out(Tensor tensorA, Tensor tensorB, Tensor tensorC, *, Tensor(a!) out ) -> Tensor(a!)"
-  register_op: False
-  interface: diopiMatmulacc(ctx, out, tensorA, tensorB, tensorC)
 
 - schema: "cumsum.out(Tensor self, int dim, *, ScalarType? dtype=None, Tensor(a!) out) -> Tensor(a!)"
   custom_code_at_the_beginning: |

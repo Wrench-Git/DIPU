@@ -244,6 +244,10 @@ static void patchTensor(py::module& m) {
    m.def("is_dipu", [](at::Tensor self) -> bool {
       return dipu::isDeviceTensor(self);
   });
+
+   m.def("matmuladd", [](at::Tensor self) -> at::Tensor {
+      return self;
+  });
 }
 
 static void exportGenerator(py::module& m) {
