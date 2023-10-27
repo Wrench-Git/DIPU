@@ -87,7 +87,10 @@ static void exportDevices(py::module& m) {
    m.def("_dipu_getDeviceStatus", [](int device) -> std::shared_ptr<DIPUDeviceStatus> {
         return dipu::getDeviceStatus(device);
       },  py::arg("device"));
-
+   
+   m.def("_dipu_allDevicesStatusInfo",[]() -> std::string {
+     return "Function called";
+   });
 }
 
 static void exportStream(py::module& m) {

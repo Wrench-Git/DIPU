@@ -268,3 +268,7 @@ def get_device_status(device: _device_t) -> _C._DIPUDeviceStatus:
     _lazy_init()
     device_id = _get_device_index(device, optional=True)
     return _C._dipu_getDeviceStatus(device_id)
+
+def all_device_status() -> str:
+    _lazy_init()
+    return _C._dipu_allDevicesStatusInfo()
