@@ -89,7 +89,13 @@ static void exportDevices(py::module& m) {
       },  py::arg("device"));
    
    m.def("_dipu_allDevicesStatusInfo",[]() -> std::string {
-     return "Function called";
+        std::ostringstream stream;
+        stream << "DIPU VENDOR:  " << dipu::VendorTypeToStr(VENDOR_TYPE) << std::endl;
+        stream << "DIPU DEVICE TYPE:   " <<  DeviceTypeName(DIPU_DEVICE_TYPE, true) << std::endl;
+        for(int device_id = 0; device_id < devproxy::getDeviceCount(); device_id++){
+            stream << "Device id: " << device_id << std::endl << "  status:" << std::endl << "    freeGlobalMem:  " <<  dipu::getDeviceStatus(device_id)->freeGlobalMem << std::endl;
+        }
+        return stream.str();
    });
 }
 
